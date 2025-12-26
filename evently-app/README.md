@@ -1,73 +1,127 @@
-# React + TypeScript + Vite
+# Evently App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+An event management application built with Next.js, React, and Tailwind CSS.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Create events with AI assistance
+- Manual event creation
+- Event management dashboard
+- Interactive event builder with AI refinement
+- Multiple event templates
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Framework**: Next.js 15 (App Router)
+- **UI Library**: React 19
+- **Styling**: Tailwind CSS 4
+- **Language**: TypeScript
 
-## Expanding the ESLint configuration
+## Getting Started
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Prerequisites
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- Node.js 18+ installed
+- npm or yarn package manager
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Installation
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+1. Install dependencies:
+
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Development
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Run the development server:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run dev
 ```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
+
+### Build
+
+Build the application for production:
+
+```bash
+npm run build
+```
+
+### Start Production Server
+
+Start the production server:
+
+```bash
+npm start
+```
+
+### Linting
+
+Run ESLint:
+
+```bash
+npm run lint
+```
+
+## Project Structure
+
+```
+evently-app/
+├── src/
+│   ├── app/                    # Next.js App Router pages
+│   │   ├── layout.tsx         # Root layout
+│   │   ├── page.tsx           # Home page (Landing)
+│   │   ├── create-with-ai/    # AI-assisted event creation
+│   │   ├── event-setup/       # Event setup page
+│   │   ├── event-prompt/      # Event prompt page
+│   │   └── event-builder/     # Event builder page
+│   ├── components/            # React components
+│   │   ├── Button.tsx
+│   │   ├── Card.tsx
+│   │   ├── CreateWithAI.tsx
+│   │   ├── EmptyState.tsx
+│   │   ├── EventBuilder.tsx
+│   │   ├── EventListItem.tsx
+│   │   ├── EventPrompt.tsx
+│   │   ├── EventSetup.tsx
+│   │   ├── Input.tsx
+│   │   ├── Landing.tsx
+│   │   ├── Sidebar.tsx
+│   │   ├── TemplateCard.tsx
+│   │   └── Textarea.tsx
+│   └── globals.css            # Global styles
+├── public/                    # Static assets
+├── next.config.ts            # Next.js configuration
+├── tsconfig.json             # TypeScript configuration
+├── postcss.config.js         # PostCSS configuration
+└── package.json              # Dependencies and scripts
+```
+
+## Routes
+
+- `/` - Landing page with event dashboard
+- `/create-with-ai` - AI-assisted event creation with templates
+- `/event-setup` - Event name setup
+- `/event-prompt` - AI prompt for event generation
+- `/event-builder` - Interactive event builder and editor
+
+## Migration from Vite
+
+This project was migrated from Vite to Next.js. Key changes:
+
+- Replaced `react-router-dom` with Next.js App Router
+- Updated navigation hooks (`useNavigate` → `useRouter`, `useLocation` → `usePathname`)
+- Added `'use client'` directives to interactive components
+- Restructured project to use Next.js app directory
+- Updated build and dev scripts
+
+## Learn More
+
+To learn more about the technologies used:
+
+- [Next.js Documentation](https://nextjs.org/docs)
+- [React Documentation](https://react.dev)
+- [Tailwind CSS Documentation](https://tailwindcss.com/docs)

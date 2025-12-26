@@ -1,4 +1,6 @@
-import { useNavigate } from 'react-router-dom';
+'use client';
+
+import { useRouter } from 'next/navigation';
 import Sidebar from './Sidebar';
 import TemplateCard from './TemplateCard';
 
@@ -36,15 +38,15 @@ const templates = [
 ];
 
 export default function CreateWithAI() {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const handleTemplateSelect = (templateId: number) => {
     console.log('Selected template:', templateId);
     // Navigate based on template type
     if (templateId === 1 || templateId === 4) {
-      navigate('/event-setup');
+      router.push('/event-setup');
     } else if (templateId === 2 || templateId === 5) {
-      navigate('/event-prompt');
+      router.push('/event-prompt');
     }
   };
 

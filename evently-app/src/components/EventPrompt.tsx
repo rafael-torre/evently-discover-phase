@@ -1,18 +1,20 @@
+'use client';
+
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import Sidebar from './Sidebar';
 import Button from './Button';
 import Textarea from './Textarea';
 
 export default function EventPrompt() {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [prompt, setPrompt] = useState('');
 
   const handleGenerateEvent = () => {
     console.log('Generating event with prompt:', prompt);
     // TODO: Call AI API to generate event
     // Navigate to event builder page
-    navigate('/event-builder');
+    router.push('/event-builder');
   };
 
   const handleOpenPromptBuilder = () => {

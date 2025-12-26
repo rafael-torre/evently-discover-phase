@@ -1,25 +1,27 @@
+'use client';
+
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import Sidebar from './Sidebar';
 import Button from './Button';
 import Input from './Input';
 
 export default function EventSetup() {
-  const navigate = useNavigate();
+  const router = useRouter();
   const [eventName, setEventName] = useState('');
 
   const handleCreate = () => {
     if (eventName.trim()) {
       console.log('Creating event:', eventName);
       // Navigate to event prompt page
-      navigate('/event-prompt');
+      router.push('/event-prompt');
     }
   };
 
   const handleSkip = () => {
     console.log('Skipping event name');
     // Navigate to event prompt page without name
-    navigate('/event-prompt');
+    router.push('/event-prompt');
   };
 
   return (

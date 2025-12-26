@@ -1,4 +1,6 @@
-import { useLocation, useNavigate } from 'react-router-dom';
+'use client';
+
+import { usePathname, useRouter } from 'next/navigation';
 
 const imgIcon = "https://www.figma.com/api/mcp/asset/79580c89-d89c-416f-8435-7f95f9414145";
 
@@ -8,19 +10,19 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ userName = "Mihir", userInitials = "MP" }: SidebarProps) {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const router = useRouter();
+  const pathname = usePathname();
 
   const handleEventsClick = () => {
-    navigate('/');
+    router.push('/');
   };
 
-  const isEventsActive = location.pathname === '/';
+  const isEventsActive = pathname === '/';
 
   return (
     <div className="bg-white w-[288px] h-full shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_-1px_rgba(0,0,0,0.1)] flex flex-col">
       {/* Header */}
-      <div className="flex flex-col gap-[8px] pt-[32px] px-[32px] pb-[32px] cursor-pointer" onClick={() => navigate('/')}>
+      <div className="flex flex-col gap-[8px] pt-[32px] px-[32px] pb-[32px] cursor-pointer" onClick={() => router.push('/')}>
         <h1 className="font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[32px] text-[#0f172b] text-[24px] tracking-[-0.5297px]">
           Evently
         </h1>
