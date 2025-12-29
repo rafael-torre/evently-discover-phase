@@ -1,8 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import Sidebar from './Sidebar';
 import Button from './Button';
+import ExhibitorManagement, { Exhibitor } from './ExhibitorManagement';
+import Sidebar from './Sidebar';
+import SpeakerManagement, { Speaker } from './SpeakerManagement';
 
 // Checkmark icon for ticket features
 const CheckIcon = () => (
@@ -25,7 +27,10 @@ const SparklesIcon = () => (
   </svg>
 );
 
+type TabType = 'preview' | 'speakers' | 'exhibitors' | 'tickets' | 'registration';
+
 export default function EventBuilder() {
+  const [activeTab, setActiveTab] = useState<TabType>('preview');
   const [showRefinementPanel, setShowRefinementPanel] = useState(true);
   const [editingSection, setEditingSection] = useState<string | null>(null);
   const [heroTitle, setHeroTitle] = useState('The Glow Summit.');
@@ -33,6 +38,106 @@ export default function EventBuilder() {
   const [aiPrompt, setAiPrompt] = useState('');
   const [description, setDescription] = useState('Experience the latest in skincare with industry leaders at the Glow Summit.');
   const [descriptionSubtext, setDescriptionSubtext] = useState('Limited to 100 attendees. Discover, learn and connect in New York City');
+
+  // Speaker state with initial data
+  const [speakers, setSpeakers] = useState<Speaker[]>([
+    {
+      id: '1',
+      name: 'Daniela Kim',
+      title: 'Skincare Expert & Beauty Scientist',
+      bio: "Hear Daniela Kim's expert perspective on transformative skincare routines and the future of beauty science.",
+      isFeatured: true,
+      scheduleTime: '2:00 PM - 3:00 PM',
+      topic: 'Transformative Skincare Routines',
+      venueLocation: 'Main Hall'
+    },
+    {
+      id: '2',
+      name: 'Dr. Elisa Ray',
+      title: 'Dermatologist',
+      bio: 'Leading dermatologist specializing in advanced skin treatments.',
+      isFeatured: false,
+      scheduleTime: '3:30 PM - 4:15 PM',
+      topic: 'Advanced Skin Treatments',
+      venueLocation: 'Room A'
+    },
+    {
+      id: '3',
+      name: 'Michael Tan',
+      title: 'Beauty Industry Innovator',
+      bio: 'Pioneering new approaches to sustainable beauty products.',
+      isFeatured: false,
+      scheduleTime: '4:30 PM - 5:15 PM',
+      topic: 'Sustainable Beauty',
+      venueLocation: 'Room B'
+    },
+    {
+      id: '4',
+      name: 'Ava Books',
+      title: 'Wellness Coach',
+      bio: 'Holistic approach to beauty and wellness.',
+      isFeatured: false,
+      scheduleTime: '5:30 PM - 6:00 PM',
+      topic: 'Holistic Beauty',
+      venueLocation: 'Main Hall'
+    },
+    {
+      id: '5',
+      name: 'Priya Desai',
+      title: 'Cosmetic Chemist',
+      bio: 'Expert in formulation science and ingredient innovation.',
+      isFeatured: false,
+      scheduleTime: '6:15 PM - 7:00 PM',
+      topic: 'Beauty Science Innovation',
+      venueLocation: 'Room A'
+    }
+  ]);
+
+  // Exhibitor state with initial data
+  const [exhibitors, setExhibitors] = useState<Exhibitor[]>([
+    {
+      id: '1',
+      companyName: 'GlowTech Innovations',
+      tagline: 'Revolutionizing skincare through science',
+      description: 'Leading provider of AI-powered skincare analysis tools and personalized treatment solutions.',
+      tier: 'platinum',
+      boothNumber: 'A-101',
+      floorArea: 'Main Hall',
+      website: 'https://glowtech.example.com',
+      contactPerson: 'Sarah Chen',
+      contactEmail: 'sarah@glowtech.example.com',
+      industryTags: ['Technology', 'Skincare', 'AI'],
+      offerings: 'AI skin analysis devices, personalized skincare apps, professional consultation tools'
+    },
+    {
+      id: '2',
+      companyName: 'Pure Essence Botanicals',
+      tagline: 'Natural beauty, scientifically proven',
+      description: 'Organic and sustainable skincare products crafted from rare botanical ingredients.',
+      tier: 'gold',
+      boothNumber: 'B-205',
+      floorArea: 'East Wing',
+      website: 'https://pureessence.example.com',
+      contactPerson: 'Michael Torres',
+      contactEmail: 'michael@pureessence.example.com',
+      industryTags: ['Organic', 'Sustainability', 'Skincare'],
+      offerings: 'Organic serums, botanical face masks, sustainable packaging solutions'
+    },
+    {
+      id: '3',
+      companyName: 'DermaCare Solutions',
+      tagline: 'Professional-grade skincare for everyone',
+      description: 'Clinical skincare products developed by dermatologists for professional and home use.',
+      tier: 'silver',
+      boothNumber: 'C-112',
+      floorArea: 'Main Hall',
+      website: 'https://dermacare.example.com',
+      contactPerson: 'Dr. Lisa Park',
+      contactEmail: 'lisa@dermacare.example.com',
+      industryTags: ['Clinical', 'Dermatology', 'Healthcare'],
+      offerings: 'Medical-grade cleansers, prescription-strength treatments, professional consultation'
+    }
+  ]);
 
   const handleAIRefine = (section: string) => {
     console.log(`AI refining ${section} with prompt:`, aiPrompt);
@@ -45,33 +150,105 @@ export default function EventBuilder() {
       {/* Sidebar */}
       <Sidebar userName="Mihir" userInitials="MP" />
 
-      {/* Main Content - Scrollable Event Landing Page */}
-      <div className="flex-1 overflow-y-auto relative">
-        <div className="flex flex-col items-center px-10 py-6 max-w-[1012px] mx-auto">
-          {/* Header Navigation */}
-          <div className="flex items-center justify-between w-full mb-[100px]">
-            <div className="flex items-center gap-[39px] text-center">
-              <p className="font-['Rethink_Sans:Medium',sans-serif] font-medium text-[24px] text-black">
-                GlowEvent
-              </p>
-              <p className="font-['Rethink_Sans:Regular',sans-serif] font-normal text-[16px] text-[rgba(0,0,0,0.6)] tracking-[-0.08px]">
-                About
-              </p>
-              <p className="font-['Rethink_Sans:Regular',sans-serif] font-normal text-[16px] text-[rgba(0,0,0,0.6)] tracking-[-0.08px]">
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col overflow-hidden relative">
+        {/* Tab Navigation - Fixed at top */}
+        <div className="shrink-0 bg-white border-b border-[rgba(0,0,0,0.1)]">
+          <div className="flex items-center justify-between w-full px-10">
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setActiveTab('preview')}
+                className={`font-['SF_Pro:Medium',sans-serif] text-[14px] px-6 py-4 transition-colors relative ${
+                  activeTab === 'preview'
+                    ? 'text-black'
+                    : 'text-[rgba(0,0,0,0.5)] hover:text-[rgba(0,0,0,0.7)]'
+                }`}
+              >
+                Preview
+                {activeTab === 'preview' && (
+                  <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-black" />
+                )}
+              </button>
+              <button
+                onClick={() => setActiveTab('speakers')}
+                className={`font-['SF_Pro:Medium',sans-serif] text-[14px] px-6 py-4 transition-colors relative ${
+                  activeTab === 'speakers'
+                    ? 'text-black'
+                    : 'text-[rgba(0,0,0,0.5)] hover:text-[rgba(0,0,0,0.7)]'
+                }`}
+              >
                 Speakers
-              </p>
-              <p className="font-['Rethink_Sans:Regular',sans-serif] font-normal text-[16px] text-[rgba(0,0,0,0.6)] tracking-[-0.08px]">
+                {activeTab === 'speakers' && (
+                  <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-black" />
+                )}
+              </button>
+              <button
+                onClick={() => setActiveTab('exhibitors')}
+                className={`font-['SF_Pro:Medium',sans-serif] text-[14px] px-6 py-4 transition-colors relative ${
+                  activeTab === 'exhibitors'
+                    ? 'text-black'
+                    : 'text-[rgba(0,0,0,0.5)] hover:text-[rgba(0,0,0,0.7)]'
+                }`}
+              >
+                Exhibitors
+                {activeTab === 'exhibitors' && (
+                  <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-black" />
+                )}
+              </button>
+              <button
+                onClick={() => setActiveTab('tickets')}
+                className={`font-['SF_Pro:Medium',sans-serif] text-[14px] px-6 py-4 transition-colors relative ${
+                  activeTab === 'tickets'
+                    ? 'text-black'
+                    : 'text-[rgba(0,0,0,0.5)] hover:text-[rgba(0,0,0,0.7)]'
+                }`}
+              >
                 Tickets
-              </p>
+                {activeTab === 'tickets' && (
+                  <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-black" />
+                )}
+              </button>
+              <button
+                onClick={() => setActiveTab('registration')}
+                className={`font-['SF_Pro:Medium',sans-serif] text-[14px] px-6 py-4 transition-colors relative ${
+                  activeTab === 'registration'
+                    ? 'text-black'
+                    : 'text-[rgba(0,0,0,0.5)] hover:text-[rgba(0,0,0,0.7)]'
+                }`}
+              >
+                Registration
+                {activeTab === 'registration' && (
+                  <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-black" />
+                )}
+              </button>
             </div>
-            <button className="bg-[#061111] flex items-center justify-center px-4 py-1 rounded-[20px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05),0px_0.5px_1px_0px_rgba(0,0,0,0.02)] h-[32px]">
-              <p className="font-['SF_Pro:Medium',sans-serif] text-[14px] leading-[1.1] text-white">
-                Register
-              </p>
-            </button>
-          </div>
 
-          {/* Hero Section */}
+            {/* Toggle Refinement Panel Button (when hidden, only on Preview tab) */}
+            {!showRefinementPanel && activeTab === 'preview' && (
+              <button
+                onClick={() => setShowRefinementPanel(true)}
+                className="bg-[#4d4d4d] text-white px-4 py-2 rounded-[20px] shadow-[0px_2px_8px_0px_rgba(0,0,0,0.15)] hover:bg-[#3d3d3d] transition-colors"
+              >
+                <span className="font-['SF_Pro:Medium',sans-serif] text-[14px]">Show Refinement Panel</span>
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Scrollable Content Area */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="flex flex-col items-center px-10 py-6 max-w-[1012px] mx-auto">
+          {/* Preview Tab - Event Landing Page */}
+          {activeTab === 'preview' && (
+            <>
+              {/* Event Name Header */}
+              <div className="w-full mb-[60px] pb-6 border-b border-[rgba(0,0,0,0.08)]">
+                <h1 className="font-['Rethink_Sans:SemiBold',sans-serif] font-semibold text-[32px] text-black tracking-[-0.5px]">
+                  GlowEvent
+                </h1>
+              </div>
+
+              {/* Hero Section */}
           <div className="flex flex-col items-center text-center mb-[100px] relative group">
             {editingSection === 'hero' ? (
               <div className="flex flex-col gap-4 w-[600px] bg-white border border-[rgba(0,0,0,0.15)] rounded-[24px] p-6 shadow-[0px_4px_12px_0px_rgba(0,0,0,0.08)]">
@@ -275,50 +452,83 @@ export default function EventBuilder() {
           {/* Speakers Section */}
           <div className="flex flex-col gap-10 items-center mb-[100px]">
             {/* Featured Speaker */}
-            <div className="flex gap-8 items-center w-[677px]">
-              <div className="bg-[rgba(217,217,217,0.25)] rounded-[21.146px] w-[263px] h-[263px]" />
-              <div className="flex flex-col gap-2 items-start justify-center flex-1">
-                <div className="border border-[rgba(0,0,0,0.1)] border-solid flex items-center justify-center px-2 py-1 rounded-[16px]">
-                  <p className="font-['Rethink_Sans:Regular',sans-serif] font-normal text-[14px] text-[rgba(0,0,0,0.5)] tracking-[-0.07px] leading-normal">
-                    Featured speaker
-                  </p>
+            {speakers.filter(s => s.isFeatured).map(speaker => (
+              <div key={speaker.id} className="flex gap-8 items-center w-[677px]">
+                <div className="bg-[rgba(217,217,217,0.25)] rounded-[21.146px] w-[263px] h-[263px] flex items-center justify-center">
+                  {speaker.imageUrl ? (
+                    <img src={speaker.imageUrl} alt={speaker.name} className="w-full h-full object-cover rounded-[21.146px]" />
+                  ) : (
+                    <span className="font-['Rethink_Sans:SemiBold',sans-serif] text-[48px] text-[rgba(0,0,0,0.3)]">
+                      {speaker.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
+                    </span>
+                  )}
                 </div>
-                <p className="font-['Rethink_Sans:Medium',sans-serif] font-medium text-[18px] text-[rgba(0,0,0,0.8)] text-center tracking-[-0.09px] leading-normal">
-                  Featured Speaker: Daniela Kim
-                </p>
-                <p className="font-['Rethink_Sans:Regular',sans-serif] font-normal text-[14px] text-[rgba(0,0,0,0.5)] tracking-[-0.07px] leading-normal whitespace-pre-wrap w-full">
-                  Hear Daniela Kim's expert perspective on transformative skincare routines and the future of beauty science.
-                </p>
+                <div className="flex flex-col gap-2 items-start justify-center flex-1">
+                  <div className="border border-[rgba(0,0,0,0.1)] border-solid flex items-center justify-center px-2 py-1 rounded-[16px]">
+                    <p className="font-['Rethink_Sans:Regular',sans-serif] font-normal text-[14px] text-[rgba(0,0,0,0.5)] tracking-[-0.07px] leading-normal">
+                      Featured speaker
+                    </p>
+                  </div>
+                  <p className="font-['Rethink_Sans:Medium',sans-serif] font-medium text-[18px] text-[rgba(0,0,0,0.8)] tracking-[-0.09px] leading-normal">
+                    {speaker.name}
+                  </p>
+                  {speaker.title && (
+                    <p className="font-['Rethink_Sans:Regular',sans-serif] font-normal text-[13px] text-[rgba(0,0,0,0.4)] tracking-[-0.07px] leading-normal">
+                      {speaker.title}
+                    </p>
+                  )}
+                  <p className="font-['Rethink_Sans:Regular',sans-serif] font-normal text-[14px] text-[rgba(0,0,0,0.5)] tracking-[-0.07px] leading-normal whitespace-pre-wrap w-full">
+                    {speaker.bio}
+                  </p>
+                  {(speaker.scheduleTime || speaker.topic) && (
+                    <div className="mt-2 pt-2 border-t border-[rgba(0,0,0,0.1)] w-full">
+                      {speaker.scheduleTime && (
+                        <p className="font-['SF_Pro:Regular',sans-serif] text-[12px] text-[rgba(0,0,0,0.5)]">
+                          <span className="font-medium">Time:</span> {speaker.scheduleTime}
+                        </p>
+                      )}
+                      {speaker.topic && (
+                        <p className="font-['SF_Pro:Regular',sans-serif] text-[12px] text-[rgba(0,0,0,0.5)]">
+                          <span className="font-medium">Topic:</span> {speaker.topic}
+                        </p>
+                      )}
+                      {speaker.venueLocation && (
+                        <p className="font-['SF_Pro:Regular',sans-serif] text-[12px] text-[rgba(0,0,0,0.5)]">
+                          <span className="font-medium">Location:</span> {speaker.venueLocation}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
+            ))}
 
             {/* Other Speakers */}
-            <div className="flex gap-10 items-center">
-              <div className="flex flex-col gap-2 items-center justify-center">
-                <div className="bg-[rgba(217,217,217,0.25)] rounded-[12.06px] w-[150px] h-[150px]" />
-                <p className="font-['Rethink_Sans:Medium',sans-serif] font-medium text-[18px] text-[rgba(0,0,0,0.8)] text-center tracking-[-0.09px] leading-normal">
-                  Dr. Elisa Ray
-                </p>
+            {speakers.some(s => !s.isFeatured) && (
+              <div className="flex gap-10 items-center flex-wrap justify-center">
+                {speakers.filter(s => !s.isFeatured).map(speaker => (
+                  <div key={speaker.id} className="flex flex-col gap-2 items-center justify-center">
+                    <div className="bg-[rgba(217,217,217,0.25)] rounded-[12.06px] w-[150px] h-[150px] flex items-center justify-center">
+                      {speaker.imageUrl ? (
+                        <img src={speaker.imageUrl} alt={speaker.name} className="w-full h-full object-cover rounded-[12.06px]" />
+                      ) : (
+                        <span className="font-['Rethink_Sans:SemiBold',sans-serif] text-[32px] text-[rgba(0,0,0,0.3)]">
+                          {speaker.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
+                        </span>
+                      )}
+                    </div>
+                    <p className="font-['Rethink_Sans:Medium',sans-serif] font-medium text-[18px] text-[rgba(0,0,0,0.8)] text-center tracking-[-0.09px] leading-normal">
+                      {speaker.name}
+                    </p>
+                    {speaker.scheduleTime && (
+                      <p className="font-['SF_Pro:Regular',sans-serif] text-[11px] text-[rgba(0,0,0,0.5)] text-center">
+                        {speaker.scheduleTime}
+                      </p>
+                    )}
+                  </div>
+                ))}
               </div>
-              <div className="flex flex-col gap-2 items-center justify-center">
-                <div className="bg-[rgba(217,217,217,0.25)] rounded-[12.06px] w-[150px] h-[150px]" />
-                <p className="font-['Rethink_Sans:Medium',sans-serif] font-medium text-[18px] text-[rgba(0,0,0,0.8)] text-center tracking-[-0.09px] leading-normal">
-                  Michael Tan
-                </p>
-              </div>
-              <div className="flex flex-col gap-2 items-center justify-center">
-                <div className="bg-[rgba(217,217,217,0.25)] rounded-[12.06px] w-[150px] h-[150px]" />
-                <p className="font-['Rethink_Sans:Medium',sans-serif] font-medium text-[18px] text-[rgba(0,0,0,0.8)] text-center tracking-[-0.09px] leading-normal">
-                  Ava Books
-                </p>
-              </div>
-              <div className="flex flex-col gap-2 items-center justify-center">
-                <div className="bg-[rgba(217,217,217,0.25)] rounded-[12.06px] w-[150px] h-[150px]" />
-                <p className="font-['Rethink_Sans:Medium',sans-serif] font-medium text-[18px] text-[rgba(0,0,0,0.8)] text-center tracking-[-0.09px] leading-normal">
-                  Priya Desai
-                </p>
-              </div>
-            </div>
+            )}
           </div>
 
           {/* Tickets Section */}
@@ -429,10 +639,57 @@ export default function EventBuilder() {
               </p>
             </button>
           </div>
+            </>
+          )}
+
+          {/* Speakers Tab - Speaker Management */}
+          {activeTab === 'speakers' && (
+            <SpeakerManagement
+              speakers={speakers}
+              onClose={() => {}} // No close needed in tab view
+              onSave={(updatedSpeakers) => setSpeakers(updatedSpeakers)}
+              isModal={false}
+            />
+          )}
+
+          {/* Exhibitors Tab - Exhibitor Management */}
+          {activeTab === 'exhibitors' && (
+            <ExhibitorManagement
+              exhibitors={exhibitors}
+              onClose={() => {}} // No close needed in tab view
+              onSave={(updatedExhibitors) => setExhibitors(updatedExhibitors)}
+              isModal={false}
+            />
+          )}
+
+          {/* Tickets Tab */}
+          {activeTab === 'tickets' && (
+            <div className="flex flex-col items-center justify-center py-20">
+              <p className="font-['Rethink_Sans:Medium',sans-serif] font-medium text-[24px] text-[rgba(0,0,0,0.4)] mb-2">
+                Tickets
+              </p>
+              <p className="font-['SF_Pro:Regular',sans-serif] text-[16px] text-[rgba(0,0,0,0.4)]">
+                Configure ticket types and pricing
+              </p>
+            </div>
+          )}
+
+          {/* Registration Tab */}
+          {activeTab === 'registration' && (
+            <div className="flex flex-col items-center justify-center py-20">
+              <p className="font-['Rethink_Sans:Medium',sans-serif] font-medium text-[24px] text-[rgba(0,0,0,0.4)] mb-2">
+                Registration
+              </p>
+              <p className="font-['SF_Pro:Regular',sans-serif] text-[16px] text-[rgba(0,0,0,0.4)]">
+                Customize registration form and attendee information
+              </p>
+            </div>
+          )}
+
         </div>
 
-        {/* Refinement Panel - Fixed on the right */}
-        {showRefinementPanel && (
+        {/* Refinement Panel - Fixed on the right (only on Preview tab) */}
+        {showRefinementPanel && activeTab === 'preview' && (
           <div className="fixed right-6 top-6 w-[320px] bg-white border border-[rgba(0,0,0,0.15)] rounded-[24px] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.08)] p-6 z-10">
             <div className="flex items-center justify-between mb-6">
               <h3 className="font-['Rethink_Sans:Medium',sans-serif] font-medium text-[18px] text-black">
@@ -503,22 +760,6 @@ export default function EventBuilder() {
                 <EditIcon />
                 Edit Description
               </Button>
-              <Button
-                variant="tertiary"
-                className="w-full justify-start gap-2"
-                onClick={() => setEditingSection('speakers')}
-              >
-                <EditIcon />
-                Edit Speakers
-              </Button>
-              <Button
-                variant="tertiary"
-                className="w-full justify-start gap-2"
-                onClick={() => setEditingSection('tickets')}
-              >
-                <EditIcon />
-                Edit Tickets
-              </Button>
             </div>
 
             {/* Publish Button */}
@@ -532,16 +773,7 @@ export default function EventBuilder() {
             </div>
           </div>
         )}
-
-        {/* Toggle Refinement Panel Button (when hidden) */}
-        {!showRefinementPanel && (
-          <button
-            onClick={() => setShowRefinementPanel(true)}
-            className="fixed right-6 top-6 bg-[#4d4d4d] text-white px-4 py-2 rounded-[20px] shadow-[0px_2px_8px_0px_rgba(0,0,0,0.15)] hover:bg-[#3d3d3d] transition-colors z-10"
-          >
-            <span className="font-['SF_Pro:Medium',sans-serif] text-[14px]">Show Refinement Panel</span>
-          </button>
-        )}
+        </div>
       </div>
     </div>
   );

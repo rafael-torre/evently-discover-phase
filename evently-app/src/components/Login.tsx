@@ -109,7 +109,10 @@ export default function Login() {
           <div className="text-center mt-8">
             <p className="font-['SF_Pro',sans-serif] text-[14px] text-[#64748b]">
               Don't have an account?{' '}
-              <button className="text-[#0f172b] font-medium hover:underline">
+              <button
+                onClick={() => router.push('/signup')}
+                className="text-[#0f172b] font-medium hover:underline"
+              >
                 Sign up
               </button>
             </p>
