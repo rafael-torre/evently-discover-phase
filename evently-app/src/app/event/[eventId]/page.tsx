@@ -1,21 +1,18 @@
 'use client';
 
-import { useState } from 'react';
-import { useParams, useSearchParams, useRouter } from 'next/navigation';
-import Sidebar from '@/components/Sidebar';
 import EventHeader from '@/components/EventHeader';
-import Overview from '@/components/Overview';
-import Website from '@/components/Website';
-import SpeakerManagement, { Speaker } from '@/components/SpeakerManagement';
 import ExhibitorManagement, { Exhibitor } from '@/components/ExhibitorManagement';
+import Overview from '@/components/Overview';
+import Sidebar from '@/components/Sidebar';
+import SpeakerManagement, { Speaker } from '@/components/SpeakerManagement';
+import Website from '@/components/Website';
+import { useSearchParams } from 'next/navigation';
+import { useState } from 'react';
 
 type Section = 'overview' | 'details' | 'agenda' | 'website' | 'speakers' | 'exhibitors' | 'tickets' | 'registration' | 'settings';
 
 export default function EventPage() {
-  const params = useParams();
   const searchParams = useSearchParams();
-  const router = useRouter();
-  const eventId = params?.eventId as string;
 
   // Get section from URL search params, default to 'overview'
   const section = (searchParams?.get('section') as Section) || 'overview';
@@ -124,7 +121,20 @@ export default function EventPage() {
   const renderContent = () => {
     switch (section) {
       case 'overview':
-        return <Overview />;
+        return <Overview
+          eventStatus="published"
+          eventDate={new Date('2025-02-15')} // Event in ~6 weeks
+          locationConfirmed={true} // Location is confirmed
+          speakersCount={speakers.length} // 5 speakers total
+          speakersConfirmed={3} // Only 3 have confirmed - WARNING
+          exhibitorsCount={exhibitors.length} // 3 exhibitors total
+          exhibitorsConfirmed={2} // Only 2 confirmed - WARNING
+          agendaComplete={true}
+          ticketsSold={143}
+          ticketCapacity={300}
+          ticketPrice={50}
+          websiteViews={2640}
+        />;
 
       case 'website':
         return <Website speakers={speakers} />;
@@ -182,7 +192,20 @@ export default function EventPage() {
         );
 
       default:
-        return <Overview />;
+        return <Overview
+          eventStatus="published"
+          eventDate={new Date('2025-02-15')}
+          locationConfirmed={true}
+          speakersCount={speakers.length}
+          speakersConfirmed={3}
+          exhibitorsCount={exhibitors.length}
+          exhibitorsConfirmed={2}
+          agendaComplete={true}
+          ticketsSold={143}
+          ticketCapacity={300}
+          ticketPrice={50}
+          websiteViews={2640}
+        />;
     }
   };
 
