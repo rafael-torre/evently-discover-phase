@@ -16,13 +16,11 @@ export default function Sidebar() {
 
   // Determine active tab based on section param
   const isOverviewActive = section === 'overview';
-  const isDetailsActive = section === 'details';
-  const isAgendaActive = section === 'agenda';
-  const isWebsiteActive = section === 'website';
-  const isExhibitorsActive = section === 'exhibitors';
-  const isSpeakersActive = section === 'speakers';
-  const isTicketsActive = section === 'tickets';
   const isRegistrationActive = section === 'registration';
+  const isAgendaActive = section === 'agenda';
+  const isExhibitorsActive = section === 'exhibitors';
+  const isCommunicationActive = section === 'communication';
+  const isInsightsActive = section === 'insights';
   const isSettingsActive = section === 'settings';
 
   return (
@@ -45,19 +43,19 @@ export default function Sidebar() {
           </span>
         </button>
 
-        {/* Details */}
+        {/* Registration */}
         <button
-          onClick={() => navigateToSection('details')}
+          onClick={() => navigateToSection('registration')}
           className={`w-full rounded-[16px] px-[15px] h-12 flex items-center gap-[13px] transition-colors ${
-            isDetailsActive ? 'bg-[#f1f5f9]' : 'bg-[#fefefe] hover:bg-[#f1f5f9]'
+            isRegistrationActive ? 'bg-[#f1f5f9]' : 'bg-[#fefefe] hover:bg-[#f1f5f9]'
           }`}
         >
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M11.6667 2.5H4.16667C3.72464 2.5 3.30072 2.67559 2.98816 2.98816C2.67559 3.30072 2.5 3.72464 2.5 4.16667V15.8333C2.5 16.2754 2.67559 16.6993 2.98816 17.0118C3.30072 17.3244 3.72464 17.5 4.16667 17.5H15.8333C16.2754 17.5 16.6993 17.3244 17.0118 17.0118C17.3244 16.6993 17.5 16.2754 17.5 15.8333V8.33333L11.6667 2.5Z" stroke="#4f4f4f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M11.6667 2.5V8.33333H17.5" stroke="#4f4f4f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M15 7.5H5C4.30964 7.5 3.75 8.05964 3.75 8.75V11.25C3.75 11.9404 4.30964 12.5 5 12.5H15C15.6904 12.5 16.25 11.9404 16.25 11.25V8.75C16.25 8.05964 15.6904 7.5 15 7.5Z" stroke="#4f4f4f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M12.5 7.5V12.5" stroke="#4f4f4f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
           <span className="font-['Inter',sans-serif] text-[16px] text-[#4f4f4f] leading-[24px]">
-            Details
+            Registration
           </span>
         </button>
 
@@ -79,41 +77,6 @@ export default function Sidebar() {
           </span>
         </button>
 
-        {/* Website */}
-        <button
-          onClick={() => navigateToSection('website')}
-          className={`w-full rounded-[16px] px-[15px] h-12 flex items-center gap-[13px] transition-colors ${
-            isWebsiteActive ? 'bg-[#f1f5f9]' : 'bg-[#fefefe] hover:bg-[#f1f5f9]'
-          }`}
-        >
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M10 18.3333C14.6024 18.3333 18.3333 14.6024 18.3333 10C18.3333 5.39763 14.6024 1.66667 10 1.66667C5.39763 1.66667 1.66667 5.39763 1.66667 10C1.66667 14.6024 5.39763 18.3333 10 18.3333Z" stroke="#4f4f4f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M1.66667 10H18.3333" stroke="#4f4f4f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M10 1.66667C12.0844 3.94863 13.269 6.91003 13.3333 10C13.269 13.09 12.0844 16.0514 10 18.3333C7.91561 16.0514 6.73104 13.09 6.66667 10C6.73104 6.91003 7.91561 3.94863 10 1.66667Z" stroke="#4f4f4f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-          <span className="font-['Inter',sans-serif] text-[16px] text-[#4f4f4f] leading-[24px]">
-            Website
-          </span>
-        </button>
-
-        {/* Speakers */}
-        <button
-          onClick={() => navigateToSection('speakers')}
-          className={`w-full rounded-[16px] px-[15px] h-12 flex items-center gap-[13px] transition-colors ${
-            isSpeakersActive ? 'bg-[#f1f5f9]' : 'bg-[#fefefe] hover:bg-[#f1f5f9]'
-          }`}
-        >
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M13.3333 17.5V15.8333C13.3333 14.9493 12.9821 14.1014 12.357 13.4763C11.7319 12.8512 10.884 12.5 10 12.5H4.16667C3.28261 12.5 2.43476 12.8512 1.80964 13.4763C1.18452 14.1014 0.833336 14.9493 0.833336 15.8333V17.5" stroke="#4f4f4f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M7.08333 9.16667C8.92428 9.16667 10.4167 7.67428 10.4167 5.83333C10.4167 3.99238 8.92428 2.5 7.08333 2.5C5.24238 2.5 3.75 3.99238 3.75 5.83333C3.75 7.67428 5.24238 9.16667 7.08333 9.16667Z" stroke="#4f4f4f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M19.1667 17.5V15.8333C19.1662 15.0948 18.9204 14.3773 18.4679 13.7936C18.0154 13.2099 17.3819 12.793 16.6667 12.6083" stroke="#4f4f4f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M13.3333 2.60834C14.0503 2.79192 14.6858 3.20892 15.1396 3.79359C15.5935 4.37827 15.8398 5.09736 15.8398 5.8375C15.8398 6.57765 15.5935 7.29674 15.1396 7.88141C14.6858 8.46609 14.0503 8.88309 13.3333 9.06667" stroke="#4f4f4f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-          <span className="font-['Inter',sans-serif] text-[16px] text-[#4f4f4f] leading-[24px]">
-            Speakers
-          </span>
-        </button>
-
         {/* Exhibitors */}
         <button
           onClick={() => navigateToSection('exhibitors')}
@@ -131,38 +94,34 @@ export default function Sidebar() {
           </span>
         </button>
 
-        {/* Tickets */}
+        {/* Communication */}
         <button
-          onClick={() => navigateToSection('tickets')}
+          onClick={() => navigateToSection('communication')}
           className={`w-full rounded-[16px] px-[15px] h-12 flex items-center gap-[13px] transition-colors ${
-            isTicketsActive ? 'bg-[#f1f5f9]' : 'bg-[#fefefe] hover:bg-[#f1f5f9]'
+            isCommunicationActive ? 'bg-[#f1f5f9]' : 'bg-[#fefefe] hover:bg-[#f1f5f9]'
           }`}
         >
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M15 7.5H5C4.30964 7.5 3.75 8.05964 3.75 8.75V11.25C3.75 11.9404 4.30964 12.5 5 12.5H15C15.6904 12.5 16.25 11.9404 16.25 11.25V8.75C16.25 8.05964 15.6904 7.5 15 7.5Z" stroke="#4f4f4f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M12.5 7.5V12.5" stroke="#4f4f4f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M18.3333 9.23333C18.3405 10.2348 18.1377 11.2263 17.7381 12.1433C17.2172 13.3444 16.3949 14.3936 15.3487 15.1919C14.3025 15.9903 13.0688 16.5124 11.7674 16.7091C10.466 16.9058 9.13796 16.7709 7.90001 16.3167L1.66667 18.3333L3.68334 12.1C3.22915 10.862 3.09426 9.53399 3.29094 8.23258C3.48761 6.93118 4.00973 5.69749 4.8081 4.65129C5.60647 3.60508 6.65562 2.78281 7.85668 2.26185C8.77375 1.86234 9.76521 1.65952 10.7667 1.66666H11.1667C12.9233 1.75744 14.5827 2.52514 15.8121 3.8163C17.0415 5.10746 17.7524 6.82493 17.8 8.58333V9.23333Z" stroke="#4f4f4f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
           <span className="font-['Inter',sans-serif] text-[16px] text-[#4f4f4f] leading-[24px]">
-            Tickets
+            Communication
           </span>
         </button>
 
-        {/* Registration */}
+        {/* Insights */}
         <button
-          onClick={() => navigateToSection('registration')}
+          onClick={() => navigateToSection('insights')}
           className={`w-full rounded-[16px] px-[15px] h-12 flex items-center gap-[13px] transition-colors ${
-            isRegistrationActive ? 'bg-[#f1f5f9]' : 'bg-[#fefefe] hover:bg-[#f1f5f9]'
+            isInsightsActive ? 'bg-[#f1f5f9]' : 'bg-[#fefefe] hover:bg-[#f1f5f9]'
           }`}
         >
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M11.6667 2.5H4.16667C3.72464 2.5 3.30072 2.67559 2.98816 2.98816C2.67559 3.30072 2.5 3.72464 2.5 4.16667V15.8333C2.5 16.2754 2.67559 16.6993 2.98816 17.0118C3.30072 17.3244 3.72464 17.5 4.16667 17.5H15.8333C16.2754 17.5 16.6993 17.3244 17.0118 17.0118C17.3244 16.6993 17.5 16.2754 17.5 15.8333V8.33333L11.6667 2.5Z" stroke="#4f4f4f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M11.6667 2.5V8.33333H17.5" stroke="#4f4f4f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M14.1667 11.6667H5.83333" stroke="#4f4f4f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M14.1667 14.1667H5.83333" stroke="#4f4f4f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M7.5 9.16667H6.66667H5.83333" stroke="#4f4f4f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M18.3333 18.3333H1.66667V1.66667" stroke="#4f4f4f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M18.3333 5L11.6667 11.6667L8.33333 8.33333L1.66667 15" stroke="#4f4f4f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
           <span className="font-['Inter',sans-serif] text-[16px] text-[#4f4f4f] leading-[24px]">
-            Registration
+            Insights
           </span>
         </button>
 

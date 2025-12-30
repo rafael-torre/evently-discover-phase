@@ -3,13 +3,13 @@
 import EventHeader from '@/components/EventHeader';
 import ExhibitorManagement, { Exhibitor } from '@/components/ExhibitorManagement';
 import Overview from '@/components/Overview';
+import RegistrationManagement, { RegistrationField, RegistrationSettings, TicketType } from '@/components/RegistrationManagement';
 import Sidebar from '@/components/Sidebar';
 import SpeakerManagement, { Speaker } from '@/components/SpeakerManagement';
-import Website from '@/components/Website';
 import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 
-type Section = 'overview' | 'details' | 'agenda' | 'website' | 'speakers' | 'exhibitors' | 'tickets' | 'registration' | 'settings';
+type Section = 'overview' | 'registration' | 'agenda' | 'exhibitors' | 'communication' | 'insights' | 'settings';
 
 export default function EventPage() {
   const searchParams = useSearchParams();
@@ -117,6 +117,44 @@ export default function EventPage() {
     }
   ]);
 
+  // Registration & Ticket state
+  const [tickets, setTickets] = useState<TicketType[]>([
+    {
+      id: '1',
+      name: 'Standard',
+      price: 0,
+      capacity: 200,
+      registered: 0,
+      isActive: true,
+    },
+    {
+      id: '2',
+      name: 'Early Birds',
+      price: 0,
+      capacity: 10,
+      registered: 0,
+      salesEnd: '2025-02-01T23:59:59',
+      isActive: true,
+    }
+  ]);
+
+  const [registrationFields, setRegistrationFields] = useState<RegistrationField[]>([
+    {
+      id: 'field-1',
+      label: 'What company do you work for?',
+      type: 'text',
+      placeholder: 'What is your job title?',
+      required: false,
+      order: 0,
+    }
+  ]);
+
+  const [registrationSettings, setRegistrationSettings] = useState<RegistrationSettings>({
+    isOpen: true,
+    eventCapacity: 'unlimited',
+    groupRegistrationEnabled: false,
+  });
+
   // Render content based on active section
   const renderContent = () => {
     switch (section) {
@@ -136,10 +174,27 @@ export default function EventPage() {
           websiteViews={2640}
         />;
 
-      case 'website':
-        return <Website speakers={speakers} />;
+      case 'registration':
+        return (
+          <div className="flex-1 flex flex-col overflow-hidden">
+            <div className="flex-1 overflow-y-auto p-10">
+              <RegistrationManagement
+                tickets={tickets}
+                fields={registrationFields}
+                settings={registrationSettings}
+                onClose={() => {}}
+                onSave={(updatedTickets, updatedFields, updatedSettings) => {
+                  setTickets(updatedTickets);
+                  setRegistrationFields(updatedFields);
+                  setRegistrationSettings(updatedSettings);
+                }}
+                isModal={false}
+              />
+            </div>
+          </div>
+        );
 
-      case 'speakers':
+      case 'agenda':
         return (
           <div className="flex-1 flex flex-col overflow-hidden">
             <div className="flex-1 overflow-y-auto p-10">
@@ -167,10 +222,8 @@ export default function EventPage() {
           </div>
         );
 
-      case 'details':
-      case 'agenda':
-      case 'tickets':
-      case 'registration':
+      case 'communication':
+      case 'insights':
       case 'settings':
         return (
           <div className="flex-1 flex flex-col overflow-hidden">
@@ -180,10 +233,8 @@ export default function EventPage() {
                   {section}
                 </p>
                 <p className="font-['SF_Pro:Regular',sans-serif] text-[16px] text-[rgba(0,0,0,0.4)]">
-                  {section === 'details' && 'Edit event details and information'}
-                  {section === 'agenda' && 'Create and manage your event schedule'}
-                  {section === 'tickets' && 'Configure ticket types and pricing'}
-                  {section === 'registration' && 'Customize registration form and attendee information'}
+                  {section === 'communication' && 'Manage event communications and notifications'}
+                  {section === 'insights' && 'View analytics and attendee insights'}
                   {section === 'settings' && 'Configure event settings and preferences'}
                 </p>
               </div>
