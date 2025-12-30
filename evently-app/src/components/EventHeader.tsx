@@ -5,14 +5,67 @@ import Button from './Button';
 
 interface EventHeaderProps {
   eventName?: string;
+  eventStatus?: 'draft' | 'published' | 'live' | 'finished';
   onPublish?: () => void;
 }
 
 export default function EventHeader({
   eventName = "Event name",
+  eventStatus,
   onPublish
 }: EventHeaderProps) {
   const router = useRouter();
+
+  const renderRightSection = () => {
+    // If no status or draft, show publish button
+    if (!eventStatus || eventStatus === 'draft') {
+      return (
+        <button
+          onClick={onPublish || (() => console.log('Publish event'))}
+          className="bg-black text-white border border-[rgba(0,0,0,0.2)] rounded-[6px] px-3 py-[6px] h-[38px] flex items-center justify-center hover:bg-black/90 transition-colors"
+        >
+          <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-[20px]">
+            Publish event
+          </span>
+        </button>
+      );
+    }
+
+    // Otherwise show status badge
+    const statusConfig = {
+      published: {
+        label: 'Published',
+        bgColor: 'bg-[#059669]',
+        textColor: 'text-white',
+        showPulse: false
+      },
+      live: {
+        label: 'Live',
+        bgColor: 'bg-[#DC2626]',
+        textColor: 'text-white',
+        showPulse: true
+      },
+      finished: {
+        label: 'Finished',
+        bgColor: 'bg-[rgba(0,0,0,0.1)]',
+        textColor: 'text-[rgba(0,0,0,0.6)]',
+        showPulse: false
+      }
+    };
+
+    const config = statusConfig[eventStatus];
+
+    return (
+      <div className={`flex items-center gap-2 px-4 py-2 ${config.bgColor} rounded-[6px] h-[38px]`}>
+        {config.showPulse && (
+          <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+        )}
+        <span className={`font-['Inter:Bold',sans-serif] font-bold text-[14px] ${config.textColor} uppercase tracking-wide`}>
+          {config.label}
+        </span>
+      </div>
+    );
+  };
 
   return (
     <div className="sticky top-0 z-50 backdrop-blur-[6px] bg-white/80 border-b border-[#e5e7eb] px-8 py-4">
@@ -42,15 +95,8 @@ export default function EventHeader({
           </h1>
         </div>
 
-        {/* Right: Publish button */}
-        <button
-          onClick={onPublish || (() => console.log('Publish event'))}
-          className="bg-black text-white border border-[rgba(0,0,0,0.2)] rounded-[6px] px-3 py-[6px] h-[38px] flex items-center justify-center hover:bg-black/90 transition-colors"
-        >
-          <span className="font-['Inter',sans-serif] font-medium text-[14px] leading-[20px]">
-            Publish event
-          </span>
-        </button>
+        {/* Right: Status badge or Publish button */}
+        {renderRightSection()}
       </div>
     </div>
   );

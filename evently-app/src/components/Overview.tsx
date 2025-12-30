@@ -1,7 +1,7 @@
 'use client';
 
+import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { useRouter, useParams } from 'next/navigation';
 import Button from './Button';
 
 // Status Icons
@@ -70,6 +70,25 @@ interface ReadinessItem {
   section?: string;
 }
 
+// Live event types
+interface Person {
+  id: string;
+  name: string;
+  role?: string;
+  checkedIn: boolean;
+  checkInTime?: Date;
+}
+
+interface AgendaItem {
+  id: string;
+  title: string;
+  type: 'session' | 'break' | 'food' | 'networking' | 'keynote';
+  startTime: Date;
+  endTime: Date;
+  speaker?: string;
+  location?: string;
+}
+
 interface OverviewProps {
   eventStatus?: 'draft' | 'published' | 'live' | 'finished';
   eventDate?: Date;
@@ -83,6 +102,12 @@ interface OverviewProps {
   ticketCapacity?: number;
   ticketPrice?: number;
   websiteViews?: number;
+  // Live event props
+  speakers?: Person[];
+  exhibitors?: Person[];
+  agenda?: AgendaItem[];
+  attendeesCheckedIn?: number;
+  onOpenUrgentCommunication?: () => void;
 }
 
 export default function Overview({
@@ -97,7 +122,12 @@ export default function Overview({
   ticketsSold = 143,
   ticketCapacity = 300,
   ticketPrice = 50,
-  websiteViews = 2640
+  websiteViews = 2640,
+  speakers = [],
+  exhibitors = [],
+  agenda = [],
+  attendeesCheckedIn = 0,
+  onOpenUrgentCommunication
 }: OverviewProps) {
   const router = useRouter();
   const params = useParams();
@@ -322,6 +352,346 @@ export default function Overview({
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // LIVE STATE VIEW
+  if (eventStatus === 'live') {
+    const currentTime = new Date();
+
+    // Get current and upcoming agenda items
+    const getCurrentAgendaItem = (): AgendaItem | null => {
+      return agenda.find(item =>
+        item.startTime <= currentTime && item.endTime > currentTime
+      ) || null;
+    };
+
+    const getUpcomingAgendaItems = (): AgendaItem[] => {
+      return agenda
+        .filter(item => item.startTime > currentTime)
+        .sort((a, b) => a.startTime.getTime() - b.startTime.getTime())
+        .slice(0, 4); // Next 4 items
+    };
+
+    const currentItem = getCurrentAgendaItem();
+    const upcomingItems = getUpcomingAgendaItems();
+
+    const speakersCheckedIn = speakers.filter(s => s.checkedIn).length;
+    const exhibitorsCheckedIn = exhibitors.filter(e => e.checkedIn).length;
+
+    // Format time helper
+    const formatTime = (date: Date) => {
+      return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    };
+
+    // Get time until next item
+    const getTimeUntil = (date: Date) => {
+      const diff = date.getTime() - currentTime.getTime();
+      const minutes = Math.floor(diff / 60000);
+      const hours = Math.floor(minutes / 60);
+
+      if (hours > 0) {
+        return `in ${hours}h ${minutes % 60}m`;
+      }
+      return `in ${minutes}m`;
+    };
+
+    return (
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="flex-1 overflow-y-auto bg-gradient-to-br from-[#fafafa] to-[#f0f4f8]">
+          <div className="px-20 py-8 max-w-[1152px]">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="font-['Rethink_Sans:Bold',sans-serif] font-bold text-[24px] text-black tracking-[-0.5px]">
+                Overview
+              </h2>
+
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+              {/* Attendees Checked In */}
+              <div className="bg-white border border-[rgba(0,0,0,0.15)] rounded-[8px] px-6 py-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10 10C12.7614 10 15 7.76142 15 5C15 2.23858 12.7614 0 10 0C7.23858 0 5 2.23858 5 5C5 7.76142 7.23858 10 10 10Z" fill="#059669"/>
+                    <path d="M10 12.5C5.16667 12.5 1.25 14.5833 1.25 17.0833V20H18.75V17.0833C18.75 14.5833 14.8333 12.5 10 12.5Z" fill="#059669"/>
+                  </svg>
+                  <h3 className="font-['Inter:SemiBold',sans-serif] font-semibold text-[14px] text-[rgba(0,0,0,0.6)]">
+                    Attendees
+                  </h3>
+                </div>
+                <p className="font-['Rethink_Sans:Bold',sans-serif] font-bold text-[32px] text-black tracking-[-1px]">
+                  {attendeesCheckedIn}
+                </p>
+                <p className="font-['Inter:Regular',sans-serif] text-[13px] text-[rgba(0,0,0,0.5)]">
+                  of {ticketsSold} registered
+                </p>
+              </div>
+
+              {/* Speakers Status */}
+              <div className="bg-white border border-[rgba(0,0,0,0.15)] rounded-[8px] px-6 py-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10 10C12.7614 10 15 7.76142 15 5C15 2.23858 12.7614 0 10 0C7.23858 0 5 2.23858 5 5C5 7.76142 7.23858 10 10 10Z" fill="#7C3AED"/>
+                    <path d="M10 12.5C5.16667 12.5 1.25 14.5833 1.25 17.0833V20H18.75V17.0833C18.75 14.5833 14.8333 12.5 10 12.5Z" fill="#7C3AED"/>
+                  </svg>
+                  <h3 className="font-['Inter:SemiBold',sans-serif] font-semibold text-[14px] text-[rgba(0,0,0,0.6)]">
+                    Speakers
+                  </h3>
+                </div>
+                <p className="font-['Rethink_Sans:Bold',sans-serif] font-bold text-[32px] text-black tracking-[-1px]">
+                  {speakersCheckedIn}/{speakers.length}
+                </p>
+                <p className="font-['Inter:Regular',sans-serif] text-[13px] text-[rgba(0,0,0,0.5)]">
+                  checked in
+                </p>
+              </div>
+
+              {/* Exhibitors Status */}
+              <div className="bg-white border border-[rgba(0,0,0,0.15)] rounded-[8px] px-6 py-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2 4H18V16H2V4Z" stroke="#EA580C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                    <path d="M6 8H14M6 12H14" stroke="#EA580C" strokeWidth="2" strokeLinecap="round"/>
+                  </svg>
+                  <h3 className="font-['Inter:SemiBold',sans-serif] font-semibold text-[14px] text-[rgba(0,0,0,0.6)]">
+                    Exhibitors
+                  </h3>
+                </div>
+                <p className="font-['Rethink_Sans:Bold',sans-serif] font-bold text-[32px] text-black tracking-[-1px]">
+                  {exhibitorsCheckedIn}/{exhibitors.length}
+                </p>
+                <p className="font-['Inter:Regular',sans-serif] text-[13px] text-[rgba(0,0,0,0.5)]">
+                  checked in
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-4">
+              {/* Urgent Communication Card */}
+              <div className="bg-white border border-[rgba(0,0,0,0.15)] rounded-[12px] px-6 py-5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-[#DC2626] rounded-[10px] flex items-center justify-center text-white">
+                      <svg width="24" height="24" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10 6.66669V10M10 13.3334H10.01M18.3333 10C18.3333 14.6024 14.6024 18.3334 10 18.3334C5.39763 18.3334 1.66667 14.6024 1.66667 10C1.66667 5.39765 5.39763 1.66669 10 1.66669C14.6024 1.66669 18.3333 5.39765 18.3333 10Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <h3 className="font-['Inter:Bold',sans-serif] font-bold text-[18px] text-black tracking-[-0.5px]">
+                        Send Urgent Communication
+                      </h3>
+                      <p className="font-['Inter:Regular',sans-serif] text-[14px] text-[rgba(0,0,0,0.6)]">
+                        Notify all attendees about critical updates during the event
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    variant="primary"
+                    onClick={onOpenUrgentCommunication || (() => navigateToSection('communication'))}
+                  >
+                    Send Alert
+                  </Button>
+                </div>
+              </div>
+
+              {/* Live Agenda */}
+              <div className="bg-white border border-[rgba(0,0,0,0.15)] rounded-[8px] px-6 py-5">
+                <h3 className="font-['Inter:Bold',sans-serif] font-bold text-[18px] text-black tracking-[-0.5px] mb-4">
+                  Live Agenda
+                </h3>
+
+                {/* Current Item */}
+                {currentItem && (
+                  <div className="mb-5 p-4 bg-gradient-to-r from-[#10b981]/10 to-[#10b981]/5 border-l-4 border-[#10b981] rounded-[8px]">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="px-2 py-0.5 bg-[#10b981] text-white text-[11px] font-['Inter:Bold',sans-serif] font-bold rounded-[4px] uppercase">
+                            Now
+                          </span>
+                          <span className="font-['Inter:Medium',sans-serif] font-medium text-[13px] text-[rgba(0,0,0,0.5)]">
+                            {formatTime(currentItem.startTime)} - {formatTime(currentItem.endTime)}
+                          </span>
+                        </div>
+                        <h4 className="font-['Inter:SemiBold',sans-serif] font-semibold text-[16px] text-black mb-1">
+                          {currentItem.title}
+                        </h4>
+                        <div className="flex items-center gap-3 text-[13px] text-[rgba(0,0,0,0.6)]">
+                          {currentItem.speaker && (
+                            <span className="flex items-center gap-1">
+                              <svg width="14" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M10 10C12.7614 10 15 7.76142 15 5C15 2.23858 12.7614 0 10 0C7.23858 0 5 2.23858 5 5C5 7.76142 7.23858 10 10 10Z" fill="currentColor"/>
+                                <path d="M10 12.5C5.16667 12.5 1.25 14.5833 1.25 17.0833V20H18.75V17.0833C18.75 14.5833 14.8333 12.5 10 12.5Z" fill="currentColor"/>
+                              </svg>
+                              {currentItem.speaker}
+                            </span>
+                          )}
+                          {currentItem.location && (
+                            <span className="flex items-center gap-1">
+                              <svg width="14" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M17.5 8.33331C17.5 14.1666 10 19.1666 10 19.1666C10 19.1666 2.5 14.1666 2.5 8.33331C2.5 6.34419 3.29018 4.43653 4.6967 3.02987C6.10322 1.62319 8.01088 0.833313 10 0.833313C11.9891 0.833313 13.8968 1.62319 15.3033 3.02987C16.7098 4.43653 17.5 6.34419 17.5 8.33331Z" stroke="currentColor" strokeWidth="1.5"/>
+                                <circle cx="10" cy="8" r="2" fill="currentColor"/>
+                              </svg>
+                              {currentItem.location}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Upcoming Items */}
+                {upcomingItems.length > 0 && (
+                  <div>
+                    <h4 className="font-['Inter:SemiBold',sans-serif] font-semibold text-[14px] text-[rgba(0,0,0,0.6)] mb-3">
+                      Up Next
+                    </h4>
+                    <div className="space-y-2">
+                      {upcomingItems.map((item) => {
+                        return (
+                          <div
+                            key={item.id}
+                            className="flex items-start gap-3 p-3 border border-[rgba(0,0,0,0.08)] rounded-[8px] hover:border-[rgba(0,0,0,0.15)] transition-colors"
+                          >
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-0.5">
+                                <span className="font-['Inter:Medium',sans-serif] font-medium text-[13px] text-[rgba(0,0,0,0.5)]">
+                                  {formatTime(item.startTime)} · {getTimeUntil(item.startTime)}
+                                </span>
+                              </div>
+                              <h5 className="font-['Inter:SemiBold',sans-serif] font-semibold text-[15px] text-black mb-0.5">
+                                {item.title}
+                              </h5>
+                              <div className="flex items-center gap-3 text-[12px] text-[rgba(0,0,0,0.6)]">
+                                {item.speaker && <span>{item.speaker}</span>}
+                                {item.location && <span>· {item.location}</span>}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {!currentItem && upcomingItems.length === 0 && (
+                  <div className="text-center py-8">
+                    <p className="font-['Inter:Regular',sans-serif] text-[14px] text-[rgba(0,0,0,0.5)]">
+                      No upcoming agenda items
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Check-in Status Lists */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                {/* Speakers List */}
+                <div className="bg-white border border-[rgba(0,0,0,0.15)] rounded-[8px] px-6 py-5">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="font-['Inter:Bold',sans-serif] font-bold text-[16px] text-black tracking-[-0.5px]">
+                      Speakers Check-in
+                    </h3>
+                    <span className="font-['Inter:SemiBold',sans-serif] font-semibold text-[14px] text-[#7C3AED]">
+                      {speakersCheckedIn}/{speakers.length}
+                    </span>
+                  </div>
+                  <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                    {speakers.map((speaker) => (
+                      <div
+                        key={speaker.id}
+                        className="flex items-center gap-3 p-2.5 border border-[rgba(0,0,0,0.08)] rounded-[6px]"
+                      >
+                        {speaker.checkedIn ? (
+                          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="10" cy="10" r="9" fill="#10b981" stroke="#10b981" strokeWidth="2"/>
+                            <path d="M6 10L9 13L14 7" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        ) : (
+                          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="10" cy="10" r="9" stroke="rgba(0,0,0,0.2)" strokeWidth="2" fill="none"/>
+                          </svg>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="font-['Inter:Medium',sans-serif] text-[14px] text-black truncate">
+                            {speaker.name}
+                          </p>
+                          {speaker.role && (
+                            <p className="font-['Inter:Regular',sans-serif] text-[12px] text-[rgba(0,0,0,0.5)] truncate">
+                              {speaker.role}
+                            </p>
+                          )}
+                        </div>
+                        {speaker.checkedIn && speaker.checkInTime && (
+                          <span className="font-['Inter:Regular',sans-serif] text-[11px] text-[rgba(0,0,0,0.4)]">
+                            {formatTime(speaker.checkInTime)}
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                    {speakers.length === 0 && (
+                      <p className="text-center py-4 font-['Inter:Regular',sans-serif] text-[13px] text-[rgba(0,0,0,0.5)]">
+                        No speakers registered
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Exhibitors List */}
+                <div className="bg-white border border-[rgba(0,0,0,0.15)] rounded-[8px] px-6 py-5">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="font-['Inter:Bold',sans-serif] font-bold text-[16px] text-black tracking-[-0.5px]">
+                      Exhibitors Check-in
+                    </h3>
+                    <span className="font-['Inter:SemiBold',sans-serif] font-semibold text-[14px] text-[#EA580C]">
+                      {exhibitorsCheckedIn}/{exhibitors.length}
+                    </span>
+                  </div>
+                  <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                    {exhibitors.map((exhibitor) => (
+                      <div
+                        key={exhibitor.id}
+                        className="flex items-center gap-3 p-2.5 border border-[rgba(0,0,0,0.08)] rounded-[6px]"
+                      >
+                        {exhibitor.checkedIn ? (
+                          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="10" cy="10" r="9" fill="#10b981" stroke="#10b981" strokeWidth="2"/>
+                            <path d="M6 10L9 13L14 7" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        ) : (
+                          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="10" cy="10" r="9" stroke="rgba(0,0,0,0.2)" strokeWidth="2" fill="none"/>
+                          </svg>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="font-['Inter:Medium',sans-serif] text-[14px] text-black truncate">
+                            {exhibitor.name}
+                          </p>
+                          {exhibitor.role && (
+                            <p className="font-['Inter:Regular',sans-serif] text-[12px] text-[rgba(0,0,0,0.5)] truncate">
+                              {exhibitor.role}
+                            </p>
+                          )}
+                        </div>
+                        {exhibitor.checkedIn && exhibitor.checkInTime && (
+                          <span className="font-['Inter:Regular',sans-serif] text-[11px] text-[rgba(0,0,0,0.4)]">
+                            {formatTime(exhibitor.checkInTime)}
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                    {exhibitors.length === 0 && (
+                      <p className="text-center py-4 font-['Inter:Regular',sans-serif] text-[13px] text-[rgba(0,0,0,0.5)]">
+                        No exhibitors registered
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

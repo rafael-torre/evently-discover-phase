@@ -18,6 +18,10 @@ export default function EventPage() {
   // Get section from URL search params, default to 'overview'
   const section = (searchParams?.get('section') as Section) || 'overview';
 
+  // Event status - change this to see different Overview states: 'draft', 'published', 'live', 'finished'
+  // Using state so it can be changed dynamically (in production this would come from your backend)
+  const [eventStatus] = useState<'draft' | 'published' | 'live' | 'finished'>('live'); // Change to 'live' to see live view
+
   // Speaker state
   const [speakers, setSpeakers] = useState<Speaker[]>([
     {
@@ -162,12 +166,74 @@ export default function EventPage() {
     pushEnabled: true,
   });
 
+  // LIVE event sample data (for when eventStatus === 'live')
+  const liveSpeakers = [
+    { id: '1', name: 'Daniela Kim', role: 'Skincare Expert', checkedIn: true, checkInTime: new Date('2025-12-30T08:30:00') },
+    { id: '2', name: 'Dr. Elisa Ray', role: 'Dermatologist', checkedIn: true, checkInTime: new Date('2025-12-30T08:45:00') },
+    { id: '3', name: 'Michael Tan', role: 'Beauty Innovator', checkedIn: false },
+    { id: '4', name: 'Ava Books', role: 'Wellness Coach', checkedIn: true, checkInTime: new Date('2025-12-30T09:00:00') },
+    { id: '5', name: 'Priya Desai', role: 'Cosmetic Chemist', checkedIn: false },
+  ];
+
+  const liveExhibitors = [
+    { id: '1', name: 'GlowTech Innovations', role: 'Booth A-101', checkedIn: true, checkInTime: new Date('2025-12-30T08:00:00') },
+    { id: '2', name: 'Pure Essence Botanicals', role: 'Booth B-205', checkedIn: true, checkInTime: new Date('2025-12-30T08:15:00') },
+    { id: '3', name: 'DermaCare Solutions', role: 'Booth C-112', checkedIn: false },
+  ];
+
+  // Sample agenda for live event (current time + next few hours)
+  const now = new Date();
+  const liveAgenda = [
+    {
+      id: '1',
+      title: 'Registration & Welcome Coffee',
+      type: 'networking' as const,
+      startTime: new Date(now.getTime() - 30 * 60000), // Started 30 min ago
+      endTime: new Date(now.getTime() + 30 * 60000), // Ends in 30 min
+      location: 'Main Lobby'
+    },
+    {
+      id: '2',
+      title: 'Opening Keynote: The Future of Beauty',
+      type: 'keynote' as const,
+      startTime: new Date(now.getTime() + 30 * 60000), // In 30 min
+      endTime: new Date(now.getTime() + 90 * 60000), // In 1.5 hours
+      speaker: 'Daniela Kim',
+      location: 'Main Hall'
+    },
+    {
+      id: '3',
+      title: 'Coffee Break',
+      type: 'break' as const,
+      startTime: new Date(now.getTime() + 90 * 60000),
+      endTime: new Date(now.getTime() + 105 * 60000),
+      location: 'Lobby'
+    },
+    {
+      id: '4',
+      title: 'Advanced Skin Treatments Workshop',
+      type: 'session' as const,
+      startTime: new Date(now.getTime() + 105 * 60000),
+      endTime: new Date(now.getTime() + 150 * 60000),
+      speaker: 'Dr. Elisa Ray',
+      location: 'Room A'
+    },
+    {
+      id: '5',
+      title: 'Networking Lunch',
+      type: 'food' as const,
+      startTime: new Date(now.getTime() + 150 * 60000),
+      endTime: new Date(now.getTime() + 210 * 60000),
+      location: 'Dining Hall'
+    }
+  ];
+
   // Render content based on active section
   const renderContent = () => {
     switch (section) {
       case 'overview':
         return <Overview
-          eventStatus="published"
+          eventStatus={eventStatus}
           eventDate={new Date('2025-02-15')} // Event in ~6 weeks
           locationConfirmed={true} // Location is confirmed
           speakersCount={speakers.length} // 5 speakers total
@@ -179,6 +245,15 @@ export default function EventPage() {
           ticketCapacity={300}
           ticketPrice={50}
           websiteViews={2640}
+          // LIVE event specific props
+          speakers={eventStatus === 'live' ? liveSpeakers : []}
+          exhibitors={eventStatus === 'live' ? liveExhibitors : []}
+          agenda={eventStatus === 'live' ? liveAgenda : []}
+          attendeesCheckedIn={eventStatus === 'live' ? 87 : 0}
+          onOpenUrgentCommunication={() => {
+            // Navigate to communication section
+            globalThis.location.href = `/event/1?section=communication`;
+          }}
         />;
 
       case 'registration':
@@ -262,7 +337,7 @@ export default function EventPage() {
 
       default:
         return <Overview
-          eventStatus="published"
+          eventStatus={eventStatus}
           eventDate={new Date('2025-02-15')}
           locationConfirmed={true}
           speakersCount={speakers.length}
@@ -274,13 +349,20 @@ export default function EventPage() {
           ticketCapacity={300}
           ticketPrice={50}
           websiteViews={2640}
+          speakers={eventStatus === 'live' ? liveSpeakers : []}
+          exhibitors={eventStatus === 'live' ? liveExhibitors : []}
+          agenda={eventStatus === 'live' ? liveAgenda : []}
+          attendeesCheckedIn={eventStatus === 'live' ? 87 : 0}
         />;
     }
   };
 
   return (
     <div className="flex flex-col h-screen w-full bg-white overflow-hidden">
-      <EventHeader eventName="Beauty & Wellness Expo 2025" />
+      <EventHeader
+        eventName="Beauty & Wellness Expo 2025"
+        eventStatus={eventStatus}
+      />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar />
         {renderContent()}

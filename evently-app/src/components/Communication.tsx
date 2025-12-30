@@ -159,7 +159,7 @@ const mockSentNotifications: SentNotification[] = [
   }
 ];
 
-const notificationTemplates: Record<NotificationType, NotificationTemplate> = {
+export const notificationTemplates: Record<NotificationType, NotificationTemplate> = {
   urgent: {
     id: 'urgent',
     label: 'Urgent Announcement',
