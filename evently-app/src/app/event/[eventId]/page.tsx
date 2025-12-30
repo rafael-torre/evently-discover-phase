@@ -1,5 +1,6 @@
 'use client';
 
+import Communication, { CommunicationSettings } from '@/components/Communication';
 import EventHeader from '@/components/EventHeader';
 import ExhibitorManagement, { Exhibitor } from '@/components/ExhibitorManagement';
 import Overview from '@/components/Overview';
@@ -155,6 +156,12 @@ export default function EventPage() {
     groupRegistrationEnabled: false,
   });
 
+  // Communication settings
+  const [communicationSettings, setCommunicationSettings] = useState<CommunicationSettings>({
+    emailEnabled: true,
+    pushEnabled: true,
+  });
+
   // Render content based on active section
   const renderContent = () => {
     switch (section) {
@@ -223,6 +230,18 @@ export default function EventPage() {
         );
 
       case 'communication':
+        return (
+          <div className="flex-1 flex flex-col overflow-hidden">
+            <div className="flex-1 overflow-y-auto p-10">
+              <Communication
+                eventName="Beauty & Wellness Expo 2025"
+                settings={communicationSettings}
+                onSettingsChange={setCommunicationSettings}
+              />
+            </div>
+          </div>
+        );
+
       case 'insights':
       case 'settings':
         return (
@@ -233,7 +252,6 @@ export default function EventPage() {
                   {section}
                 </p>
                 <p className="font-['SF_Pro:Regular',sans-serif] text-[16px] text-[rgba(0,0,0,0.4)]">
-                  {section === 'communication' && 'Manage event communications and notifications'}
                   {section === 'insights' && 'View analytics and attendee insights'}
                   {section === 'settings' && 'Configure event settings and preferences'}
                 </p>
