@@ -41,9 +41,6 @@ export interface Speaker {
   bio: string;
   imageUrl?: string;
   isFeatured: boolean;
-  scheduleTime: string;
-  topic: string;
-  venueLocation: string;
 }
 
 interface SpeakerManagementProps {
@@ -51,9 +48,10 @@ interface SpeakerManagementProps {
   onClose: () => void;
   onSave: (speakers: Speaker[]) => void;
   isModal?: boolean; // Whether to render as modal or embedded view
+  agendaSegments?: any[]; // Optional: to show where speakers are assigned
 }
 
-export default function SpeakerManagement({ speakers: initialSpeakers, onClose, onSave, isModal = true }: SpeakerManagementProps) {
+export default function SpeakerManagement({ speakers: initialSpeakers, onClose, onSave, isModal = true, agendaSegments = [] }: SpeakerManagementProps) {
   const [speakers, setSpeakers] = useState<Speaker[]>(initialSpeakers);
   const [editingSpeaker, setEditingSpeaker] = useState<Speaker | null>(null);
   const [isAddingNew, setIsAddingNew] = useState(false);
@@ -77,10 +75,9 @@ export default function SpeakerManagement({ speakers: initialSpeakers, onClose, 
   };
 
   const handleToggleFeatured = (id: string) => {
-    setSpeakers(speakers.map(s => ({
-      ...s,
-      isFeatured: s.id === id ? !s.isFeatured : (s.isFeatured && s.id !== id ? false : s.isFeatured)
-    })));
+    setSpeakers(speakers.map(s =>
+      s.id === id ? { ...s, isFeatured: !s.isFeatured } : s
+    ));
   };
 
   const handleEdit = (speaker: Speaker) => {
@@ -96,9 +93,6 @@ export default function SpeakerManagement({ speakers: initialSpeakers, onClose, 
       title: '',
       bio: '',
       isFeatured: false,
-      scheduleTime: '',
-      topic: '',
-      venueLocation: ''
     });
   };
 
@@ -117,11 +111,11 @@ export default function SpeakerManagement({ speakers: initialSpeakers, onClose, 
     setIsAddingNew(false);
   };
 
-  // Sort speakers: featured first, then by schedule time
+  // Sort speakers: featured first, then by name
   const sortedSpeakers = [...speakers].sort((a, b) => {
     if (a.isFeatured && !b.isFeatured) return -1;
     if (!a.isFeatured && b.isFeatured) return 1;
-    return a.scheduleTime.localeCompare(b.scheduleTime);
+    return a.name.localeCompare(b.name);
   });
 
   const content = (
@@ -179,6 +173,7 @@ export default function SpeakerManagement({ speakers: initialSpeakers, onClose, 
                   <SpeakerCard
                     key={speaker.id}
                     speaker={speaker}
+                    agendaSegments={agendaSegments}
                     onEdit={() => handleEdit(speaker)}
                     onDelete={() => handleDelete(speaker.id)}
                     onToggleFeatured={() => handleToggleFeatured(speaker.id)}
@@ -224,15 +219,21 @@ export default function SpeakerManagement({ speakers: initialSpeakers, onClose, 
 // Speaker Card Component
 function SpeakerCard({
   speaker,
+  agendaSegments,
   onEdit,
   onDelete,
   onToggleFeatured
 }: {
   speaker: Speaker;
+  agendaSegments: any[];
   onEdit: () => void;
   onDelete: () => void;
   onToggleFeatured: () => void;
 }) {
+  // Find agenda items where this speaker is assigned
+  const assignedSessions = agendaSegments.filter(segment =>
+    segment.speakerIds?.includes(speaker.id)
+  );
   return (
     <div className="bg-[rgba(0,0,0,0.02)] border border-[rgba(0,0,0,0.08)] rounded-[20px] p-5 hover:border-[rgba(0,0,0,0.15)] transition-colors">
       <div className="flex gap-4">
@@ -299,33 +300,35 @@ function SpeakerCard({
             </div>
           </div>
 
-          {/* Schedule Info */}
-          <div className="grid grid-cols-3 gap-3 mt-3 pt-3 border-t border-[rgba(0,0,0,0.08)]">
-            <div>
-              <p className="font-['SF_Pro:Medium',sans-serif] text-[11px] text-[rgba(0,0,0,0.5)] uppercase tracking-wider mb-1">
-                Time
+          {/* Agenda Assignments */}
+          {assignedSessions.length > 0 && (
+            <div className="mt-3 pt-3 border-t border-[rgba(0,0,0,0.08)]">
+              <p className="font-['SF_Pro:Medium',sans-serif] text-[11px] text-[rgba(0,0,0,0.5)] uppercase tracking-wider mb-2">
+                Assigned to {assignedSessions.length} session{assignedSessions.length > 1 ? 's' : ''}
               </p>
-              <p className="font-['SF_Pro:Regular',sans-serif] text-[13px] text-[rgba(0,0,0,0.8)]">
-                {speaker.scheduleTime || 'Not scheduled'}
-              </p>
+              <div className="space-y-1.5">
+                {assignedSessions.map((session) => (
+                  <div key={session.id} className="flex items-center gap-2 text-[12px]">
+                    <span className="font-['SF_Pro:Medium',sans-serif] text-[rgba(0,0,0,0.7)]">
+                      {session.startTime}
+                    </span>
+                    <span className="text-[rgba(0,0,0,0.4)]">•</span>
+                    <span className="font-['SF_Pro:Regular',sans-serif] text-[rgba(0,0,0,0.8)] truncate">
+                      {session.title}
+                    </span>
+                    {session.location && (
+                      <>
+                        <span className="text-[rgba(0,0,0,0.4)]">•</span>
+                        <span className="font-['SF_Pro:Regular',sans-serif] text-[rgba(0,0,0,0.6)]">
+                          {session.location}
+                        </span>
+                      </>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
-            <div>
-              <p className="font-['SF_Pro:Medium',sans-serif] text-[11px] text-[rgba(0,0,0,0.5)] uppercase tracking-wider mb-1">
-                Location
-              </p>
-              <p className="font-['SF_Pro:Regular',sans-serif] text-[13px] text-[rgba(0,0,0,0.8)]">
-                {speaker.venueLocation || 'TBD'}
-              </p>
-            </div>
-            <div className="col-span-1">
-              <p className="font-['SF_Pro:Medium',sans-serif] text-[11px] text-[rgba(0,0,0,0.5)] uppercase tracking-wider mb-1">
-                Topic
-              </p>
-              <p className="font-['SF_Pro:Regular',sans-serif] text-[13px] text-[rgba(0,0,0,0.8)] truncate">
-                {speaker.topic || 'TBD'}
-              </p>
-            </div>
-          </div>
+          )}
 
           {/* Bio Preview */}
           {speaker.bio && (
@@ -426,53 +429,12 @@ function SpeakerForm({
               Set as Featured Speaker
             </label>
           </div>
-        </div>
 
-        {/* Schedule Info */}
-        <div className="mt-6 pt-6 border-t border-[rgba(0,0,0,0.1)]">
-          <h4 className="font-['SF_Pro:Medium',sans-serif] text-[13px] text-[rgba(0,0,0,0.7)] uppercase tracking-wider mb-4">
-            Schedule Details
-          </h4>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block font-['SF_Pro:Medium',sans-serif] text-[13px] text-[rgba(0,0,0,0.7)] mb-2">
-                Time
-              </label>
-              <input
-                type="text"
-                value={formData.scheduleTime}
-                onChange={(e) => updateField('scheduleTime', e.target.value)}
-                placeholder="e.g., 2:00 PM - 3:00 PM"
-                className="w-full font-['SF_Pro:Regular',sans-serif] text-[15px] text-black border border-[rgba(0,0,0,0.15)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#4d4d4d] transition-colors"
-              />
-            </div>
-
-            <div>
-              <label className="block font-['SF_Pro:Medium',sans-serif] text-[13px] text-[rgba(0,0,0,0.7)] mb-2">
-                Venue Location
-              </label>
-              <input
-                type="text"
-                value={formData.venueLocation}
-                onChange={(e) => updateField('venueLocation', e.target.value)}
-                placeholder="e.g., Main Hall, Room A"
-                className="w-full font-['SF_Pro:Regular',sans-serif] text-[15px] text-black border border-[rgba(0,0,0,0.15)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#4d4d4d] transition-colors"
-              />
-            </div>
-          </div>
-
-          <div className="mt-4">
-            <label className="block font-['SF_Pro:Medium',sans-serif] text-[13px] text-[rgba(0,0,0,0.7)] mb-2">
-              Topic / Session Title
-            </label>
-            <input
-              type="text"
-              value={formData.topic}
-              onChange={(e) => updateField('topic', e.target.value)}
-              placeholder="e.g., Transformative Skincare Routines"
-              className="w-full font-['SF_Pro:Regular',sans-serif] text-[15px] text-black border border-[rgba(0,0,0,0.15)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#4d4d4d] transition-colors"
-            />
+          {/* Info note */}
+          <div className="mt-4 p-3 bg-[rgba(59,130,246,0.08)] border border-[rgba(59,130,246,0.2)] rounded-lg">
+            <p className="font-['SF_Pro:Regular',sans-serif] text-[13px] text-[rgba(0,0,0,0.7)]">
+              💡 To schedule this speaker, assign them to agenda items in the <strong>Agenda</strong> section.
+            </p>
           </div>
         </div>
       </div>

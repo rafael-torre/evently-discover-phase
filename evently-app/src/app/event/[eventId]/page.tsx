@@ -1,12 +1,13 @@
 'use client';
 
+import AgendaManagement, { AgendaSegment } from '@/components/AgendaManagement';
 import Communication, { CommunicationSettings } from '@/components/Communication';
 import EventHeader from '@/components/EventHeader';
 import ExhibitorManagement, { Exhibitor } from '@/components/ExhibitorManagement';
 import Overview from '@/components/Overview';
 import RegistrationManagement, { RegistrationField, RegistrationSettings, TicketType } from '@/components/RegistrationManagement';
 import Sidebar from '@/components/Sidebar';
-import SpeakerManagement, { Speaker } from '@/components/SpeakerManagement';
+import { Speaker } from '@/components/SpeakerManagement';
 import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 
@@ -20,7 +21,7 @@ export default function EventPage() {
 
   // Event status - change this to see different Overview states: 'draft', 'published', 'live', 'finished'
   // Using state so it can be changed dynamically (in production this would come from your backend)
-  const [eventStatus] = useState<'draft' | 'published' | 'live' | 'finished'>('live'); // Change to 'live' to see live view
+  const [eventStatus] = useState<'draft' | 'published' | 'live' | 'finished'>('published');
 
   // Speaker state
   const [speakers, setSpeakers] = useState<Speaker[]>([
@@ -30,9 +31,6 @@ export default function EventPage() {
       title: 'Skincare Expert & Beauty Scientist',
       bio: "Hear Daniela Kim's expert perspective on transformative skincare routines and the future of beauty science.",
       isFeatured: true,
-      scheduleTime: '2:00 PM - 3:00 PM',
-      topic: 'Transformative Skincare Routines',
-      venueLocation: 'Main Hall'
     },
     {
       id: '2',
@@ -40,9 +38,6 @@ export default function EventPage() {
       title: 'Dermatologist',
       bio: 'Leading dermatologist specializing in advanced skin treatments.',
       isFeatured: false,
-      scheduleTime: '3:30 PM - 4:15 PM',
-      topic: 'Advanced Skin Treatments',
-      venueLocation: 'Room A'
     },
     {
       id: '3',
@@ -50,9 +45,6 @@ export default function EventPage() {
       title: 'Beauty Industry Innovator',
       bio: 'Pioneering new approaches to sustainable beauty products.',
       isFeatured: false,
-      scheduleTime: '4:30 PM - 5:15 PM',
-      topic: 'Sustainable Beauty',
-      venueLocation: 'Room B'
     },
     {
       id: '4',
@@ -60,9 +52,6 @@ export default function EventPage() {
       title: 'Wellness Coach',
       bio: 'Holistic approach to beauty and wellness.',
       isFeatured: false,
-      scheduleTime: '5:30 PM - 6:00 PM',
-      topic: 'Holistic Beauty',
-      venueLocation: 'Main Hall'
     },
     {
       id: '5',
@@ -70,9 +59,6 @@ export default function EventPage() {
       title: 'Cosmetic Chemist',
       bio: 'Expert in formulation science and ingredient innovation.',
       isFeatured: false,
-      scheduleTime: '6:15 PM - 7:00 PM',
-      topic: 'Beauty Science Innovation',
-      venueLocation: 'Room A'
     }
   ]);
 
@@ -165,6 +151,211 @@ export default function EventPage() {
     emailEnabled: true,
     pushEnabled: true,
   });
+
+  // Agenda segments
+  const [agendaSegments, setAgendaSegments] = useState<AgendaSegment[]>([
+    {
+      id: 'seg-1',
+      type: 'registration',
+      title: 'Registration & Welcome Coffee',
+      description: 'Check in and enjoy refreshments before the event begins',
+      startTime: '08:00',
+      endTime: '09:00',
+      day: 0,
+      location: 'Main Lobby',
+      isPublished: true,
+    },
+    {
+      id: 'seg-2',
+      type: 'keynote',
+      title: 'Opening Keynote: The Future of Beauty',
+      description: 'Hear from industry leaders about the transformative trends in beauty and wellness',
+      startTime: '09:00',
+      endTime: '10:00',
+      day: 0,
+      location: 'Main Hall',
+      speakerIds: ['1'],
+      isPublished: true,
+    },
+    {
+      id: 'seg-3',
+      type: 'break',
+      title: 'Coffee Break',
+      startTime: '10:00',
+      endTime: '10:15',
+      day: 0,
+      location: 'Lobby',
+      isPublished: true,
+    },
+    {
+      id: 'seg-4',
+      type: 'session',
+      title: 'Advanced Skin Treatments Workshop',
+      description: 'Learn about the latest clinical approaches to skincare',
+      startTime: '10:15',
+      endTime: '11:00',
+      day: 0,
+      location: 'Room A',
+      speakerIds: ['2'],
+      capacity: 50,
+      isPublished: true,
+    },
+    {
+      id: 'seg-5',
+      type: 'panel',
+      title: 'Sustainability in Beauty',
+      description: 'Panel discussion on eco-friendly practices and sustainable beauty products',
+      startTime: '11:15',
+      endTime: '12:15',
+      day: 0,
+      location: 'Main Hall',
+      speakerIds: ['3', '4'],
+      isPublished: true,
+    },
+    {
+      id: 'seg-6',
+      type: 'food',
+      title: 'Networking Lunch',
+      description: 'Connect with fellow attendees and exhibitors over lunch',
+      startTime: '12:15',
+      endTime: '13:30',
+      day: 0,
+      location: 'Dining Hall',
+      isPublished: true,
+    },
+    {
+      id: 'seg-7',
+      type: 'workshop',
+      title: 'Beauty Science Innovation',
+      description: 'Hands-on workshop exploring ingredient innovation',
+      startTime: '13:30',
+      endTime: '14:30',
+      day: 0,
+      location: 'Room B',
+      speakerIds: ['5'],
+      capacity: 30,
+      isPublished: true,
+    },
+    {
+      id: 'seg-8',
+      type: 'networking',
+      title: 'Closing Reception',
+      description: 'Final networking opportunity with drinks and light refreshments',
+      startTime: '14:45',
+      endTime: '16:00',
+      day: 0,
+      location: 'Main Lobby',
+      isPublished: true,
+    },
+    // Day 2 - with overlapping sessions
+    {
+      id: 'seg-9',
+      type: 'registration',
+      title: 'Day 2 Registration',
+      description: 'Check-in for day two attendees',
+      startTime: '08:30',
+      endTime: '09:00',
+      day: 1,
+      location: 'Main Lobby',
+      isPublished: true,
+    },
+    {
+      id: 'seg-10',
+      type: 'keynote',
+      title: 'Innovation in Beauty Tech',
+      description: 'Exploring the intersection of technology and beauty',
+      startTime: '09:00',
+      endTime: '10:00',
+      day: 1,
+      location: 'Main Hall',
+      speakerIds: ['1'],
+      isPublished: true,
+    },
+    {
+      id: 'seg-11',
+      type: 'workshop',
+      title: 'Makeup Masterclass - Track A',
+      description: 'Professional makeup techniques for beginners',
+      startTime: '10:15',
+      endTime: '11:30',
+      day: 1,
+      location: 'Main Hall',
+      speakerIds: ['2'],
+      capacity: 30,
+      isPublished: true,
+    },
+    {
+      id: 'seg-12',
+      type: 'workshop',
+      title: 'Skincare Routine Building - Track B',
+      description: 'Create your personalized skincare routine',
+      startTime: '10:15',
+      endTime: '11:30',
+      day: 1,
+      location: 'Main Hall',
+      speakerIds: ['3'],
+      capacity: 30,
+      isPublished: true,
+    },
+    {
+      id: 'seg-13',
+      type: 'session',
+      title: 'Advanced Techniques - Track A',
+      description: 'Deep dive into advanced beauty techniques',
+      startTime: '11:45',
+      endTime: '12:45',
+      day: 1,
+      location: 'Room A',
+      speakerIds: ['4'],
+      isPublished: true,
+    },
+    {
+      id: 'seg-14',
+      type: 'session',
+      title: 'Product Innovation - Track B',
+      description: 'Latest trends in beauty product development',
+      startTime: '11:45',
+      endTime: '12:45',
+      day: 1,
+      location: 'Room A',
+      speakerIds: ['5'],
+      isPublished: true,
+    },
+    {
+      id: 'seg-15',
+      type: 'food',
+      title: 'Lunch Break',
+      description: 'Catered lunch and networking',
+      startTime: '12:45',
+      endTime: '14:00',
+      day: 1,
+      location: 'Dining Hall',
+      isPublished: true,
+    },
+    {
+      id: 'seg-16',
+      type: 'panel',
+      title: 'Industry Leaders Panel',
+      description: 'Q&A with top beauty industry executives',
+      startTime: '14:00',
+      endTime: '15:30',
+      day: 1,
+      location: 'Main Hall',
+      speakerIds: ['1', '2', '3'],
+      isPublished: true,
+    },
+    {
+      id: 'seg-17',
+      type: 'networking',
+      title: 'Closing Cocktail Reception',
+      description: 'End of day two celebration',
+      startTime: '15:30',
+      endTime: '17:00',
+      day: 1,
+      location: 'Main Lobby',
+      isPublished: true,
+    },
+  ]);
 
   // LIVE event sample data (for when eventStatus === 'live')
   const liveSpeakers = [
@@ -280,10 +471,13 @@ export default function EventPage() {
         return (
           <div className="flex-1 flex flex-col overflow-hidden">
             <div className="flex-1 overflow-y-auto p-10">
-              <SpeakerManagement
+              <AgendaManagement
+                segments={agendaSegments}
                 speakers={speakers}
+                onSpeakersChange={setSpeakers}
+                eventDays={1}
                 onClose={() => {}}
-                onSave={(updatedSpeakers) => setSpeakers(updatedSpeakers)}
+                onSave={(updatedSegments) => setAgendaSegments(updatedSegments)}
                 isModal={false}
               />
             </div>
